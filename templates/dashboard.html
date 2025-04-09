@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">StudyPlanner</div>
+            <div class="nav-links">
+                <a href="/" class="active">Dashboard</a>
+                <a href="/todo">Todo List</a>
+                <a href="/skill-planner">Skill Planner</a>
+                <a href="/calendar">Calendar</a>
+                <a href="/motivation">Motivation</a>
+                <a href="/linkedin-share">Share Progress</a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <!-- Welcome Header -->
+            <div class="welcome-header">
+                <div class="welcome-text">
+                    <img src="https://ui-avatars.com/api/?name={{ name }}&background=6c5ce7&color=fff" alt="Profile" class="profile-pic">
+                    <h1>Welcome back, {{ name }}!</h1>
+                </div>
+            </div>
+
+            <!-- Exam Countdown Banner -->
+            <div class="countdown-banner glass-card">
+                <h2>📅 15 Days left for GATE 2025</h2>
+                <p>Stay focused and keep up the great work!</p>
+            </div>
+
+            <!-- Progress Cards -->
+            <div class="progress-grid">
+                <!-- Subjects Card -->
+                <div class="progress-card">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <h3>Subjects Covered</h3>
+                    <div class="stats">{{ subjects_covered }}/{{ total_subjects }} <span class="percentage">{{ (subjects_covered/total_subjects*100)|int }}%</span></div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: {{ (subjects_covered/total_subjects*100)|int }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Hours Card -->
+                <div class="progress-card">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Hours Studied This Week</h3>
+                    <div class="stats">{{ hours_this_week }} hrs <span class="percentage">+2.5%</span></div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: {{ (hours_this_week/40*100)|int }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Tasks Card -->
+                <div class="progress-card">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </div>
+                    <h3>Tasks Done Today</h3>
+                    <div class="stats">{{ tasks_done_today }}/{{ total_tasks_today }} <span class="percentage">{{ (tasks_done_today/total_tasks_today*100)|int }}%</span></div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: {{ (tasks_done_today/total_tasks_today*100)|int }}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Todo Overview -->
+            <div class="todo-overview">
+                <h2 class="mb-3">Todo Overview</h2>
+                <div class="todo-tabs">
+                    <div class="tab-item active">Academic 🧑‍🎓</div>
+                    <div class="tab-item">Skill 📈</div>
+                    <div class="tab-item">Hobby 🎨</div>
+                </div>
+                <ul class="todo-list">
+                    <li class="todo-item">
+                        <input type="checkbox" class="todo-checkbox">
+                        <span class="todo-label">Complete Operating Systems Chapter 3</span>
+                        <span class="todo-category category-academic">Academic</span>
+                        <span class="todo-deadline">Today</span>
+                    </li>
+                    <li class="todo-item">
+                        <input type="checkbox" class="todo-checkbox">
+                        <span class="todo-label">Practice Algorithms: Quick Sort</span>
+                        <span class="todo-category category-academic">Academic</span>
+                        <span class="todo-deadline">Today</span>
+                    </li>
+                    <li class="todo-item">
+                        <input type="checkbox" class="todo-checkbox" checked>
+                        <span class="todo-label">Review Discrete Mathematics Notes</span>
+                        <span class="todo-category category-academic">Academic</span>
+                        <span class="todo-deadline">Yesterday</span>
+                    </li>
+                </ul>
+                <div class="text-center mt-3">
+                    <a href="/todo" class="btn-outline btn">View All Tasks</a>
+                </div>
+            </div>
+
+            <!-- Mini Graph -->
+            <div class="mini-graph">
+                <div class="graph-header">
+                    <div class="graph-title">Weekly Study Hours</div>
+                    <div class="graph-legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-hours"></div>
+                            <span>Actual Hours</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-target"></div>
+                            <span>Target</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="graph-content">
+                    <svg width="100%" height="100%" viewBox="0 0 700 180">
+                        <!-- Base Line -->
+                        <line x1="40" y1="150" x2="680" y2="150" stroke="#e0e0e0" stroke-width="2" />
+                        
+                        <!-- Hour Marks -->
+                        <line x1="40" y1="150" x2="40" y2="30" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="140" y1="150" x2="140" y2="30" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="240" y1="150" x2="240" y2="30" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="340" y1="150" x2="340" y2="30" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="440" y1="150" x2="440" y2="30" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="540" y1="150" x2="540" y2="30" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="640" y1="150" x2="640" y2="30" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                        
+                        <!-- Target Line -->
+                        <line x1="40" y1="70" x2="680" y2="70" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="5,5" />
+                        <text x="20" y="75" font-size="12" fill="#666">4h</text>
+                        
+                        <!-- Data Points -->
+                        <path d="M40,120 L140,90 L240,100 L340,70 L440,80 L540,60 L640,50" fill="none" stroke="#6c5ce7" stroke-width="3" />
+                        
+                        <!-- Data Point Circles -->
+                        <circle cx="40" cy="120" r="6" fill="#6c5ce7" />
+                        <circle cx="140" cy="90" r="6" fill="#6c5ce7" />
+                        <circle cx="240" cy="100" r="6" fill="#6c5ce7" />
+                        <circle cx="340" cy="70" r="6" fill="#6c5ce7" />
+                        <circle cx="440" cy="80" r="6" fill="#6c5ce7" />
+                        <circle cx="540" cy="60" r="6" fill="#6c5ce7" />
+                        <circle cx="640" cy="50" r="6" fill="#6c5ce7" />
+                    </svg>
+                    
+                    <div class="day-indicator">
+                        <span class="day">Mon</span>
+                        <span class="day">Tue</span>
+                        <span class="day">Wed</span>
+                        <span class="day">Thu</span>
+                        <span class="day">Fri</span>
+                        <span class="day">Sat</span>
+                        <span class="day">Sun</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple tab functionality for todo overview
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                tab.classList.add('active');
+            });
+        });
+
+        // Checkbox functionality
+        document.querySelectorAll('.todo-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const todoLabel = this.nextElementSibling;
+                if (this.checked) {
+                    todoLabel.style.textDecoration = 'line-through';
+                    todoLabel.style.opacity = '0.6';
+                } else {
+                    todoLabel.style.textDecoration = 'none';
+                    todoLabel.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner - Motivation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Motivation page specific styles */
+        .insights-container {
+            margin-bottom: 40px;
+        }
+
+        .insights-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .insights-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .insights-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .insights-filter {
+            display: flex;
+            gap: 15px;
+        }
+
+        .insights-filter-btn {
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f0f0f0;
+        }
+
+        .insights-filter-btn.active {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .streak-container {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .streak-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .streak-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .flame-icon {
+            font-size: 48px;
+            margin-right: 15px;
+        }
+
+        .streak-number {
+            font-size: 64px;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .streak-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .streak-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .day-label {
+            font-size: 13px;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .streak-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            background: #f0f0f0;
+        }
+
+        .streak-day.active {
+            background: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+            position: relative;
+        }
+
+        .streak-day.active::after {
+            content: "🔥";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 16px;
+        }
+
+        .quote-container {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .quote-icon {
+            font-size: 64px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(108, 92, 231, 0.1);
+        }
+
+        .quote-content {
+            padding: 20px;
+            padding-left: 50px;
+        }
+
+        .quote-text {
+            font-size: 24px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .quote-author {
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: right;
+        }
+
+        .refresh-quote {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .refresh-quote:hover {
+            background: #e0e0e0;
+            transform: rotate(180deg);
+        }
+
+        .goals-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .goal-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .goal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .goal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: rgba(108, 92, 231, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .goal-progress {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .goal-percentage {
+            font-size: 14px;
+            margin-bottom: 5px;
+            text-align: right;
+        }
+
+        .ritual-container {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .ritual-title {
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .ritual-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .ritual-card {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.05), rgba(162, 155, 254, 0.05));
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .ritual-card h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .ritual-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">StudyPlanner</div>
+            <div class="nav-links">
+                <a href="/">Dashboard</a>
+                <a href="/todo">Todo List</a>
+                <a href="/skill-planner">Skill Planner</a>
+                <a href="/calendar">Calendar</a>
+                <a href="/motivation" class="active">Motivation</a>
+                <a href="/linkedin-share">Share Progress</a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <h1 class="mb-4">Motivation & Insights</h1>
+
+            <!-- Study Streak Section -->
+            <div class="streak-container">
+                <h2 class="streak-title">Your Current Streak</h2>
+                <div class="streak-count">
+                    <div class="flame-icon">🔥</div>
+                    <div class="streak-number">{{ streak }}</div>
+                </div>
+                <div class="streak-text">You've been studying consistently for {{ streak }} days!</div>
+                <div class="progress-bar mb-3">
+                    <div class="progress" style="width: {{ (streak/10*100)|int }}%;"></div>
+                </div>
+                <div class="streak-text">{{ 10 - streak }} more days to reach your 10-day milestone!</div>
+                
+                <!-- Mini Streak Calendar -->
+                <div class="streak-calendar">
+                    <div class="day-label">Mon</div>
+                    <div class="day-label">Tue</div>
+                    <div class="day-label">Wed</div>
+                    <div class="day-label">Thu</div>
+                    <div class="day-label">Fri</div>
+                    <div class="day-label">Sat</div>
+                    <div class="day-label">Sun</div>
+                    
+                    <div class="streak-day active">1</div>
+                    <div class="streak-day active">2</div>
+                    <div class="streak-day active">3</div>
+                    <div class="streak-day active">4</div>
+                    <div class="streak-day active">5</div>
+                    <div class="streak-day">6</div>
+                    <div class="streak-day">7</div>
+                </div>
+            </div>
+
+            <!-- Quote of the Day -->
+            <div class="quote-container">
+                <div class="quote-icon">"</div>
+                <div class="refresh-quote">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                    </svg>
+                </div>
+                <div class="quote-content">
+                    <div class="quote-text">The expert in anything was once a beginner. Don't give up. The beginning is always the hardest.</div>
+                    <div class="quote-author">— Unknown</div>
+                </div>
+            </div>
+
+            <!-- Weekly Insights -->
+            <div class="insights-container">
+                <div class="insights-card">
+                    <div class="insights-header">
+                        <h2 class="insights-title">Weekly Insights</h2>
+                        <div class="insights-filter">
+                            <div class="insights-filter-btn active">Hours</div>
+                            <div class="insights-filter-btn">Tasks</div>
+                            <div class="insights-filter-btn">Subjects</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <svg width="100%" height="100%" viewBox="0 0 800 300">
+                            <!-- X and Y Axis -->
+                            <line x1="50" y1="250" x2="750" y2="250" stroke="#e0e0e0" stroke-width="2" />
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#e0e0e0" stroke-width="2" />
+                            
+                            <!-- Y Axis Labels -->
+                            <text x="30" y="250" text-anchor="end" font-size="12" fill="#666">0h</text>
+                            <text x="30" y="200" text-anchor="end" font-size="12" fill="#666">2h</text>
+                            <text x="30" y="150" text-anchor="end" font-size="12" fill="#666">4h</text>
+                            <text x="30" y="100" text-anchor="end" font-size="12" fill="#666">6h</text>
+                            <text x="30" y="50" text-anchor="end" font-size="12" fill="#666">8h</text>
+                            
+                            <!-- Grid Lines -->
+                            <line x1="50" y1="200" x2="750" y2="200" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                            <line x1="50" y1="150" x2="750" y2="150" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                            <line x1="50" y1="100" x2="750" y2="100" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                            <line x1="50" y1="50" x2="750" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+                            
+                            <!-- Bars -->
+                            <rect x="100" y="170" width="50" height="80" fill="url(#gradient)" rx="5" />
+                            <rect x="200" y="150" width="50" height="100" fill="url(#gradient)" rx="5" />
+                            <rect x="300" y="100" width="50" height="150" fill="url(#gradient)" rx="5" />
+                            <rect x="400" y="120" width="50" height="130" fill="url(#gradient)" rx="5" />
+                            <rect x="500" y="70" width="50" height="180" fill="url(#gradient)" rx="5" />
+                            <rect x="600" y="80" width="50" height="170" fill="url(#gradient)" rx="5" />
+                            <rect x="700" y="110" width="50" height="140" fill="url(#gradient)" rx="5" />
+                            
+                            <!-- Gradient Definition -->
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#6c5ce7" />
+                                    <stop offset="100%" stop-color="#a29bfe" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="chart-labels">
+                        <span>Monday</span>
+                        <span>Tuesday</span>
+                        <span>Wednesday</span>
+                        <span>Thursday</span>
+                        <span>Friday</span>
+                        <span>Saturday</span>
+                        <span>Sunday</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Section -->
+            <h2 class="mb-3">Your Goals</h2>
+            <div class="goals-container mb-4">
+                <!-- Goal 1 -->
+                <div class="goal-card">
+                    <div class="goal-header">
+                        <div class="goal-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="goal-title">Complete GATE Syllabus</div>
+                    </div>
+                    <p>Finish all Computer Science subjects for GATE exam preparation.</p>
+                    <div class="goal-progress">
+                        <div class="goal-percentage">50%</div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal 2 -->
+                <div class="goal-card">
+                    <div class="goal-header">
+                        <div class="goal-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <div class="goal-title">Master Data Structures</div>
+                    </div>
+                    <p>Complete advanced data structures and algorithms practice.</p>
+                    <div class="goal-progress">
+                        <div class="goal-percentage">75%</div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal 3 -->
+                <div class="goal-card">
+                    <div class="goal-header">
+                        <div class="goal-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+                            </svg>
+                        </div>
+                        <div class="goal-title">Complete Web Development</div>
+                    </div>
+                    <p>Finish the full stack web development course with projects.</p>
+                    <div class="goal-progress">
+                        <div class="goal-percentage">30%</div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study Ritual Section -->
+            <div class="ritual-container">
+                <h2 class="ritual-title">Effective Study Rituals</h2>
+                <div class="ritual-list">
+                    <!-- Ritual 1 -->
+                    <div class="ritual-card">
+                        <h3>Pomodoro Technique</h3>
+                        <p>Study in 25-minute focused intervals with 5-minute breaks. After 4 intervals, take a longer 15-30 minute break.</p>
+                    </div>
+
+                    <!-- Ritual 2 -->
+                    <div class="ritual-card">
+                        <h3>Active Recall</h3>
+                        <p>Challenge yourself to remember concepts without looking at notes, then check your accuracy. One of the most effective study techniques.</p>
+                    </div>
+
+                    <!-- Ritual 3 -->
+                    <div class="ritual-card">
+                        <h3>Spaced Repetition</h3>
+                        <p>Review material at increasing intervals: 1 day, 3 days, 1 week, 2 weeks, 1 month. Perfect for long-term memorization.</p>
+                    </div>
+
+                    <!-- Ritual 4 -->
+                    <div class="ritual-card">
+                        <h3>Mind Mapping</h3>
+                        <p>Visualize relationships between concepts by creating branched diagrams that help organize and connect information.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quote refresh functionality
+        document.querySelector('.refresh-quote').addEventListener('click', function() {
+            const quotes = [
+                {text: "The expert in anything was once a beginner. Don't give up. The beginning is always the hardest.", author: "Unknown"},
+                {text: "Education is not the filling of a pail, but the lighting of a fire.", author: "W.B. Yeats"},
+                {text: "The beautiful thing about learning is that nobody can take it away from you.", author: "B.B. King"},
+                {text: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.", author: "Dr. Seuss"},
+                {text: "The difference between ordinary and extraordinary is that little extra.", author: "Jimmy Johnson"}
+            ];
+            
+            const currentQuote = document.querySelector('.quote-text').textContent;
+            let newQuote;
+            
+            // Make sure we get a different quote
+            do {
+                newQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            } while (newQuote.text === currentQuote);
+            
+            // Animate the quote change
+            const quoteText = document.querySelector('.quote-text');
+            const quoteAuthor = document.querySelector('.quote-author');
+            
+            quoteText.style.opacity = 0;
+            quoteAuthor.style.opacity = 0;
+            
+            setTimeout(() => {
+                quoteText.textContent = newQuote.text;
+                quoteAuthor.textContent = "— " + newQuote.author;
+                
+                quoteText.style.opacity = 1;
+                quoteAuthor.style.opacity = 1;
+            }, 500);
+        });
+
+        // Filter functionality for the insights chart
+        document.querySelectorAll('.insights-filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.insights-filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Here you would update the chart data based on the selected filter
+                // For this demo, we'll just show a simple animation
+                const bars = document.querySelectorAll('rect');
+                
+                bars.forEach(bar => {
+                    const currentHeight = parseInt(bar.getAttribute('height'));
+                    const newHeight = Math.floor(Math.random() * 150) + 50; // Random height between 50-200
+                    const newY = 250 - newHeight;
+                    
+                    // Animate the change
+                    let progress = 0;
+                    const duration = 20; // Number of frames for the animation
+                    const initialHeight = currentHeight;
+                    const initialY = parseInt(bar.getAttribute('y'));
+                    
+                    function animate() {
+                        progress++;
+                        
+                        const currentProgress = progress / duration;
+                        const currentAnimHeight = initialHeight + (newHeight - initialHeight) * currentProgress;
+                        const currentAnimY = initialY + (newY - initialY) * currentProgress;
+                        
+                        bar.setAttribute('height', currentAnimHeight);
+                        bar.setAttribute('y', currentAnimY);
+                        
+                        if (progress < duration) {
+                            requestAnimationFrame(animate);
+                        }
+                    }
+                    
+                    requestAnimationFrame(animate);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

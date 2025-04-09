@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner - Todo List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Todo page specific styles */
+        .task-form {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 8px 18px;
+            border-radius: 50px;
+            background: #f0f0f0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .filter-chip:hover {
+            background: #e0e0e0;
+        }
+
+        .filter-chip.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .calendar-picker {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-control {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .calendar-control:hover {
+            background: #e0e0e0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .calendar-day:hover {
+            background: #f0f0f0;
+        }
+
+        .calendar-day.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .calendar-day.has-task {
+            border: 2px solid var(--secondary-color);
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .task-list {
+            margin-top: 30px;
+        }
+
+        .task-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .task-card.priority-high {
+            border-left-color: #ff5a5f;
+        }
+
+        .task-card.priority-medium {
+            border-left-color: #ffb100;
+        }
+
+        .task-card.priority-low {
+            border-left-color: #00a8ff;
+        }
+
+        .task-checkbox {
+            margin-right: 15px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .task-badge {
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .task-badge-academic {
+            background: #e3f2fd;
+            color: #1e88e5;
+        }
+
+        .task-badge-skill {
+            background: #e8f5e9;
+            color: #43a047;
+        }
+
+        .task-badge-hobby {
+            background: #fff8e1;
+            color: #ffb300;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .task-action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .task-action-btn:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">StudyPlanner</div>
+            <div class="nav-links">
+                <a href="/">Dashboard</a>
+                <a href="/todo" class="active">Todo List</a>
+                <a href="/skill-planner">Skill Planner</a>
+                <a href="/calendar">Calendar</a>
+                <a href="/motivation">Motivation</a>
+                <a href="/linkedin-share">Share Progress</a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <h1 class="mb-4">Task Management</h1>
+
+            <!-- Add New Task Form -->
+            <div class="task-form">
+                <h2 class="mb-3">Add New Task</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title</label>
+                        <input type="text" id="taskTitle" class="form-control" placeholder="What do you need to do?">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskCategory">Category</label>
+                            <select id="taskCategory" class="form-control">
+                                <option value="academic">Academic 🧑‍🎓</option>
+                                <option value="skill">Skill Development 📈</option>
+                                <option value="hobby">Hobby 🎨</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskPriority">Priority</label>
+                            <select id="taskPriority" class="form-control">
+                                <option value="high">High Priority 🔴</option>
+                                <option value="medium">Medium Priority 🟡</option>
+                                <option value="low">Low Priority 🔵</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskDeadline">Deadline</label>
+                            <input type="date" id="taskDeadline" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Add Task</button>
+                </form>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="filter-container">
+                <h3 class="mr-3">Filter by: </h3>
+                <div class="filter-chip active">All Tasks</div>
+                <div class="filter-chip">Academic</div>
+                <div class="filter-chip">Skill</div>
+                <div class="filter-chip">Hobby</div>
+                <div class="filter-chip">High Priority</div>
+                <div class="filter-chip">Today</div>
+                <div class="filter-chip">This Week</div>
+            </div>
+
+            <!-- Calendar Picker -->
+            <div class="calendar-picker">
+                <div class="calendar-header">
+                    <h3>April 2025</h3>
+                    <div class="calendar-controls">
+                        <div class="calendar-control">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="calendar-control">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                    
+                    <!-- Empty cells for days not in current month -->
+                    <div class="calendar-day"></div>
+                    <div class="calendar-day"></div>
+                    
+                    <!-- Days in month -->
+                    <div class="calendar-day">1</div>
+                    <div class="calendar-day">2</div>
+                    <div class="calendar-day">3</div>
+                    <div class="calendar-day">4</div>
+                    <div class="calendar-day">5</div>
+                    <div class="calendar-day">6</div>
+                    <div class="calendar-day">7</div>
+                    <div class="calendar-day">8</div>
+                    <div class="calendar-day active has-task">9</div> <!-- Current date -->
+                    <div class="calendar-day has-task">10</div>
+                    <div class="calendar-day">11</div>
+                    <div class="calendar-day has-task">12</div>
+                    <div class="calendar-day">13</div>
+                    <div class="calendar-day">14</div>
+                    <div class="calendar-day has-task">15</div>
+                    <div class="calendar-day">16</div>
+                    <div class="calendar-day">17</div>
+                    <div class="calendar-day">18</div>
+                    <div class="calendar-day">19</div>
+                    <div class="calendar-day has-task">20</div>
+                    <div class="calendar-day">21</div>
+                    <div class="calendar-day">22</div>
+                    <div class="calendar-day">23</div>
+                    <div class="calendar-day">24</div>
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day">27</div>
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                </div>
+            </div>
+
+            <!-- Task List -->
+            <div class="task-list">
+                <h2 class="mb-3">Today's Tasks (April 9)</h2>
+
+                <!-- Task 1 -->
+                <div class="task-card priority-high">
+                    <input type="checkbox" class="todo-checkbox task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Complete Operating Systems Chapter 3</div>
+                        <div class="task-meta">
+                            <span class="task-badge task-badge-academic">Academic</span>
+                            <span>Due Today 6:00 PM</span>
+                            <span class="priority">High Priority</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task 2 -->
+                <div class="task-card priority-medium">
+                    <input type="checkbox" class="todo-checkbox task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Practice Algorithms: Quick Sort</div>
+                        <div class="task-meta">
+                            <span class="task-badge task-badge-academic">Academic</span>
+                            <span>Due Today 8:00 PM</span>
+                            <span class="priority">Medium Priority</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task 3 -->
+                <div class="task-card priority-low">
+                    <input type="checkbox" class="todo-checkbox task-checkbox" checked>
+                    <div class="task-content">
+                        <div class="task-title" style="text-decoration: line-through; opacity: 0.6;">Review Discrete Mathematics Notes</div>
+                        <div class="task-meta">
+                            <span class="task-badge task-badge-academic">Academic</span>
+                            <span>Due Yesterday</span>
+                            <span class="priority">Low Priority</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task 4 -->
+                <div class="task-card priority-medium">
+                    <input type="checkbox" class="todo-checkbox task-checkbox">
+                    <div class="task-content">
+                        <div class="task-title">Finish Web Development Tutorial</div>
+                        <div class="task-meta">
+                            <span class="task-badge task-badge-skill">Skill</span>
+                            <span>Due Today 9:00 PM</span>
+                            <span class="priority">Medium Priority</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="task-action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Calendar day selection
+        document.querySelectorAll('.calendar-day').forEach(day => {
+            if (day.textContent.trim()) { // Only add click event to days that have content
+                day.addEventListener('click', () => {
+                    document.querySelectorAll('.calendar-day').forEach(d => {
+                        d.classList.remove('active');
+                    });
+                    day.classList.add('active');
+                });
+            }
+        });
+
+        // Filter selection
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => {
+                    c.classList.remove('active');
+                });
+                chip.classList.add('active');
+            });
+        });
+
+        // Checkbox functionality
+        document.querySelectorAll('.todo-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const taskTitle = this.parentElement.querySelector('.task-title');
+                if (this.checked) {
+                    taskTitle.style.textDecoration = 'line-through';
+                    taskTitle.style.opacity = '0.6';
+                } else {
+                    taskTitle.style.textDecoration = 'none';
+                    taskTitle.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

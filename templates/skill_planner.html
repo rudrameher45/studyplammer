@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner - Skill Planner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Skill Planner specific styles */
+        .skill-form {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ai-prediction {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(162, 155, 254, 0.1));
+            border: 1px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .ai-prediction::before {
+            content: "🔮 AI Prediction";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--white);
+            padding: 0 10px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
+        .prediction-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        .prediction-hours {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .prediction-text {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .subtopics-container {
+            margin-top: 40px;
+        }
+
+        .subtopic-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .subtopic-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subtopic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .subtopic-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .subtopic-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(108, 92, 231, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .subtopic-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .subtopic-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-todo {
+            background: #f1f1f1;
+            color: #666;
+        }
+
+        .status-progress {
+            background: #fff8e6;
+            color: #ffb100;
+        }
+
+        .status-done {
+            background: #e8f5e9;
+            color: #43a047;
+        }
+
+        .subtopic-description {
+            margin-bottom: 15px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .subtopic-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .roadmap-container {
+            margin-top: 40px;
+            padding: 30px 0;
+        }
+
+        .roadmap-title {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .roadmap-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .roadmap-timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: var(--primary-color);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 50px;
+            width: 50%;
+            padding: 0 40px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+
+        .timeline-item::after {
+            content: "";
+            position: absolute;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: var(--white);
+            border: 4px solid var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .timeline-item:nth-child(odd)::after {
+            right: -10px;
+        }
+
+        .timeline-item:nth-child(even)::after {
+            left: -10px;
+        }
+
+        .timeline-content {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .timeline-date {
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .resource-cards {
+            margin-top: 40px;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .resource-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .resource-thumbnail {
+            height: 160px;
+            background: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .resource-type {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+        }
+
+        .resource-content {
+            padding: 20px;
+        }
+
+        .resource-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .resource-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .share-bookmark {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+
+        .action-icon:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">StudyPlanner</div>
+            <div class="nav-links">
+                <a href="/">Dashboard</a>
+                <a href="/todo">Todo List</a>
+                <a href="/skill-planner" class="active">Skill Planner</a>
+                <a href="/calendar">Calendar</a>
+                <a href="/motivation">Motivation</a>
+                <a href="/linkedin-share">Share Progress</a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <h1 class="mb-4">Skill Planner</h1>
+
+            <!-- Skill Goal Form -->
+            <div class="skill-form">
+                <h2 class="mb-3">Set Your Skill Goal</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="skillName">Skill Name</label>
+                        <input type="text" id="skillName" class="form-control" placeholder="e.g., Python Programming, Machine Learning, Data Structures">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="goalType">Goal Type</label>
+                            <select id="goalType" class="form-control">
+                                <option value="proficiency">Learn to proficiency</option>
+                                <option value="mastery">Master the skill</option>
+                                <option value="project">Complete specific project</option>
+                                <option value="exam">Prepare for exam/certification</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="targetDate">Target Date</label>
+                            <input type="date" id="targetDate" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="currentLevel">Current Level</label>
+                            <select id="currentLevel" class="form-control">
+                                <option value="beginner">Complete Beginner</option>
+                                <option value="basic">Basic Knowledge</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="targetLevel">Target Level</label>
+                            <select id="targetLevel" class="form-control">
+                                <option value="basic">Basic Knowledge</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="ai-prediction">
+                        <div class="prediction-content">
+                            <span class="prediction-hours">42</span>
+                            <span class="prediction-text">estimated hours needed to reach your goal</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Create Skill Plan</button>
+                </form>
+            </div>
+
+            <!-- Subtopics Section -->
+            <div class="subtopics-container">
+                <h2 class="mb-3">Sub-topic Breakdown</h2>
+                <div class="subtopic-cards">
+                    <!-- Subtopic 1 -->
+                    <div class="subtopic-card">
+                        <span class="subtopic-status status-progress">In Progress</span>
+                        <div class="subtopic-header">
+                            <div class="subtopic-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                            </div>
+                            <div class="subtopic-title">Python Basics</div>
+                        </div>
+                        <div class="subtopic-description">
+                            Syntax, data types, control flow, functions, and basic I/O operations.
+                        </div>
+                        <div class="subtopic-actions">
+                            <button class="btn btn-outline">View Resources</button>
+                        </div>
+                    </div>
+
+                    <!-- Subtopic 2 -->
+                    <div class="subtopic-card">
+                        <span class="subtopic-status status-todo">To-do</span>
+                        <div class="subtopic-header">
+                            <div class="subtopic-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                                </svg>
+                            </div>
+                            <div class="subtopic-title">Data Structures</div>
+                        </div>
+                        <div class="subtopic-description">
+                            Lists, dictionaries, sets, tuples, and how to efficiently use them.
+                        </div>
+                        <div class="subtopic-actions">
+                            <button class="btn btn-outline">View Resources</button>
+                        </div>
+                    </div>
+
+                    <!-- Subtopic 3 -->
+                    <div class="subtopic-card">
+                        <span class="subtopic-status status-done">Done</span>
+                        <div class="subtopic-header">
+                            <div class="subtopic-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                            </div>
+                            <div class="subtopic-title">Installing Python</div>
+                        </div>
+                        <div class="subtopic-description">
+                            Setting up Python environment and package management with pip.
+                        </div>
+                        <div class="subtopic-actions">
+                            <button class="btn btn-outline">View Resources</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap Timeline -->
+            <div class="roadmap-container">
+                <h2 class="roadmap-title">Learning Roadmap</h2>
+                <div class="roadmap-timeline">
+                    <div class="timeline-line"></div>
+                    
+                    <!-- Timeline Item 1 -->
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-date">Week 1</div>
+                            <h3>Python Basics</h3>
+                            <p>Master syntax and basic programming concepts</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 2 -->
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-date">Week 2</div>
+                            <h3>Data Structures</h3>
+                            <p>Learn lists, dictionaries, and how to effectively use them</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 3 -->
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-date">Week 3</div>
+                            <h3>Functions & Modules</h3>
+                            <p>Create reusable blocks of code and explore the Python ecosystem</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Item 4 -->
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-date">Week 4</div>
+                            <h3>Final Project</h3>
+                            <p>Build a real-world application using everything you've learned</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div class="resource-cards">
+                <h2 class="mb-3">Recommended Resources</h2>
+                <div class="resource-grid">
+                    <!-- Resource 1: YouTube -->
+                    <div class="resource-card">
+                        <div class="resource-thumbnail">
+                            <img src="https://img.youtube.com/vi/rfscVS0vtbw/maxresdefault.jpg" alt="Python Tutorial">
+                            <span class="resource-type">YouTube</span>
+                        </div>
+                        <div class="resource-content">
+                            <h3 class="resource-title">Python Full Course for Beginners</h3>
+                            <div class="resource-meta">
+                                <span>freeCodeCamp.org</span>
+                                <span>4.5 hours</span>
+                            </div>
+                            <div class="resource-actions">
+                                <a href="#" class="btn btn-outline">Watch</a>
+                                <div class="share-bookmark">
+                                    <div class="action-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="action-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                            <polyline points="16 6 12 2 8 6"></polyline>
+                                            <line x1="12" y1="2" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resource 2: PDF/Book -->
+                    <div class="resource-card">
+                        <div class="resource-thumbnail">
+                            <img src="https://covers.oreillystatic.com/images/0636920028154/lrg.jpg" alt="Python Book">
+                            <span class="resource-type">eBook</span>
+                        </div>
+                        <div class="resource-content">
+                            <h3 class="resource-title">Python Crash Course</h3>
+                            <div class="resource-meta">
+                                <span>Eric Matthes</span>
+                                <span>544 pages</span>
+                            </div>
+                            <div class="resource-actions">
+                                <a href="#" class="btn btn-outline">Download</a>
+                                <div class="share-bookmark">
+                                    <div class="action-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="action-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                            <polyline points="16 6 12 2 8 6"></polyline>
+                                            <line x1="12" y1="2" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resource 3: Blog Post -->
+                    <div class="resource-card">
+                        <div class="resource-thumbnail">
+                            <img src="https://miro.medium.com/max/1400/1*RJMxLdTHqVBSijKmOO5MAg.jpeg" alt="Python Blog">
+                            <span class="resource-type">Article</span>
+                        </div>
+                        <div class="resource-content">
+                            <h3 class="resource-title">Python Best Practices Every Beginner Should Know</h3>
+                            <div class="resource-meta">
+                                <span>Medium.com</span>
+                                <span>12 min read</span>
+                            </div>
+                            <div class="resource-actions">
+                                <a href="#" class="btn btn-outline">Read</a>
+                                <div class="share-bookmark">
+                                    <div class="action-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="action-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                            <polyline points="16 6 12 2 8 6"></polyline>
+                                            <line x1="12" y1="2" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

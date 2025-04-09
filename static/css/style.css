@@ -1,0 +1,215 @@
+/* Base Styles for Study Planner App */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Color Palette */
+  --bg-color: #f8f9fd;
+  --primary-color: #6c5ce7;
+  --secondary-color: #a29bfe;
+  --accent-color-1: #81ecec;
+  --accent-color-2: #74b9ff;
+  --text-color: #333;
+  --text-light: #666;
+  --white: #ffffff;
+  --danger: #ff7675;
+  --warning: #fdcb6e;
+  --success: #55efc4;
+  
+  /* Shadows & Effects */
+  --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+  --hover-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+  --neumorphic-shadow: 8px 8px 15px #e6e6e6, -8px -8px 15px #ffffff;
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  font-size: 16px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+ul {
+  list-style: none;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Layout Components */
+.main-content {
+  padding: 30px 0;
+}
+
+.card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+  margin-bottom: 25px;
+}
+
+.card:hover {
+  box-shadow: var(--hover-shadow);
+  transform: translateY(-5px);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 12px 25px;
+  background: var(--primary-color);
+  color: var(--white);
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  text-align: center;
+}
+
+.btn:hover {
+  background: var(--secondary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline:hover {
+  background: var(--primary-color);
+  color: var(--white);
+}
+
+/* Navigation */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links a {
+  font-weight: 500;
+}
+
+/* Utilities */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+/* Progress Indicators */
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar .progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 10px;
+}
+
+/* Priority Badges */
+.priority {
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.priority-high {
+  background: #ffedeb;
+  color: #ff5a5f;
+  border-left: 4px solid #ff5a5f;
+}
+
+.priority-medium {
+  background: #fff8e6;
+  color: #ffb100;
+  border-left: 4px solid #ffb100;
+}
+
+.priority-low {
+  background: #e6f7ff;
+  color: #00a8ff;
+  border-left: 4px solid #00a8ff;
+}

@@ -1,0 +1,297 @@
+/* Dashboard Page Styles */
+
+/* Header Section */
+.welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.welcome-text {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.welcome-text h1 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-color);
+}
+
+/* Countdown Banner */
+.countdown-banner {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.8), rgba(162, 155, 254, 0.8));
+  color: var(--white);
+  text-align: center;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.countdown-banner h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.countdown-banner p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.countdown-banner::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(30deg);
+  pointer-events: none;
+}
+
+/* Progress Cards Grid */
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.progress-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+}
+
+.progress-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+.progress-card .icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(108, 92, 231, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.progress-card .icon svg {
+  width: 30px;
+  height: 30px;
+  color: var(--primary-color);
+}
+
+.progress-card h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.progress-card .stats {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.progress-card .percentage {
+  font-size: 14px;
+  color: var(--success);
+  margin-left: 10px;
+}
+
+/* Todo Overview */
+.todo-overview {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 30px;
+}
+
+.todo-tabs {
+  display: flex;
+  border-bottom: 2px solid #f1f1f1;
+  margin-bottom: 20px;
+}
+
+.tab-item {
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+}
+
+.tab-item.active {
+  color: var(--primary-color);
+}
+
+.tab-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--primary-color);
+}
+
+.todo-list {
+  list-style: none;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.todo-item:last-child {
+  border-bottom: none;
+}
+
+.todo-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  margin-right: 15px;
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.todo-checkbox:checked {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.todo-checkbox:checked::before {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+}
+
+.todo-label {
+  flex: 1;
+  font-size: 16px;
+}
+
+.todo-category {
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 50px;
+  margin-right: 15px;
+}
+
+.category-academic {
+  background: #e3f2fd;
+  color: #1e88e5;
+}
+
+.category-skill {
+  background: #e8f5e9;
+  color: #43a047;
+}
+
+.category-hobby {
+  background: #fff8e1;
+  color: #ffb300;
+}
+
+.todo-deadline {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+/* Mini Graph */
+.mini-graph {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: var(--card-shadow);
+}
+
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.graph-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.graph-legend {
+  display: flex;
+  gap: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.legend-hours {
+  background: var(--primary-color);
+}
+
+.legend-target {
+  background: #e0e0e0;
+}
+
+.graph-content {
+  position: relative;
+  height: 180px;
+}
+
+.day-indicator {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.day {
+  font-size: 13px;
+  color: var(--text-light);
+}
